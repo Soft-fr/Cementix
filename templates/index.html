@@ -1,0 +1,49 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cemantix Clone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Jeu de Deviner le Mot</h1>
+        <div class="d-flex justify-content-center my-3">
+            <button class="btn btn-primary" onclick="startNewGame()">Nouvelle Partie</button>
+        </div>
+        <form id="guess-form" class="d-flex justify-content-center">
+            <input type="text" id="guess" class="form-control w-50 me-2" placeholder="Votre supposition">
+            <button type="submit" class="btn btn-success">Deviner</button>
+        </form>
+        <p id="result" class="text-center mt-3"></p>
+    </div>
+
+    <script>
+        function startNewGame() {
+            fetch('/new_game')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("result").innerText = data.message;
+                });
+        }
+
+        document.getElementById("guess-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const guess = document.getElementById("guess").value;
+            fetch('/guess', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ word: guess })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").innerText = `Similarité : ${data.similarity}`;
+            });
+        });
+    </script>
+</body>
+</html>
